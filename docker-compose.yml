@@ -1,0 +1,61 @@
+services:
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: the-bureaucracy-buster-bot-client
+    working_dir: /client
+    env_file:
+      - .env
+    environment:
+      - CLIENT_API_URL=http://server:8000
+    ports:
+      - "8003:8000"
+    volumes:
+      - .env:/client/.env
+    depends_on:
+      - database
+      - server
+    networks:
+      - net
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: the-bureaucracy-buster-bot-server
+    working_dir: /server
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=database
+    ports:
+      - "8002:8000"
+    volumes:
+      - .env:/server/.env
+    depends_on:
+      - database
+    networks:
+      - net
+
+  database:
+    image: postgres:17.5-alpine
+    container_name: the-bureaucracy-buster-bot-database
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - net
+
+volumes:
+  pgdata:
+
+networks:
+  net:
+    driver: bridge
