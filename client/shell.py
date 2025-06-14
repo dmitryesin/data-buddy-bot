@@ -1,6 +1,8 @@
 import os
 import json
 from pathlib import Path
+
+from api_client import get_user_settings, set_user_settings
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -22,31 +24,58 @@ with open(languages_path, "r", encoding="utf-8") as f:
 MENU, ASK_QUESTION = range(2)
 
 DEFAULT_LANGUAGE = "ru"
-current_language = DEFAULT_LANGUAGE
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.edited_message:
         return MENU
+    
+    user_settings = await get_user_settings(
+        update.effective_user.id,
+        DEFAULT_LANGUAGE,
+    )
+
+    context.user_data["language"] = user_settings.get("language", DEFAULT_LANGUAGE)
+
+    await set_user_settings(
+        update.effective_user.id,
+        context.user_data["language"],
+    )
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
     keyboard = [
         [
-            InlineKeyboardButton(LANG_TEXTS[current_language]["ask"], callback_data="question"),
-            InlineKeyboardButton(LANG_TEXTS[current_language]["help"], callback_data="help"),
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["ask"],
+                callback_data="question"
+            ),
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["help"],
+                callback_data="help"
+            ),
         ],
         [
-            InlineKeyboardButton(LANG_TEXTS[current_language]["settings"], callback_data="settings"),
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["settings"],
+                callback_data="settings"
+            ),
         ]
     ]
 
-    file_path = PY_DIR / "assets" / "texts" / "START.txt"
-    with open(file_path, "r", encoding="utf-8") as file:
-        text_to_send = file.read()
+    texts = {}
+    for lang_code in ["en", "ru"]:
+        file_path = PY_DIR / "assets" / "texts" / f"START_{lang_code.upper()}.txt"
+        with open(file_path, "r", encoding="utf-8") as file:
+            texts[lang_code] = file.read()
+
+    text_to_send = texts.get(current_language, texts["en"])
 
     if update.message:
         await update.message.reply_text(
             text_to_send,
             reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode="HTML",
+            parse_mode="HTML"
         )
     else:
         query = update.callback_query
@@ -55,60 +84,119 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text(
                 text_to_send,
                 reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode="HTML",
+                parse_mode="HTML"
             )
         else:
             await query.message.reply_text(
                 text_to_send,
                 reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode="HTML",
+                parse_mode="HTML"
             )
 
+
     return MENU
 
 
-async def respond_to_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_text = update.message.text
-    await update.message.reply_text(f"Вы ввели: {user_text}. Вот мой ответ!")
-
-
-async def ask_question_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.callback_query:
-        await update.callback_query.answer()
-        await update.callback_query.edit_message_text("Пожалуйста, введите ваш вопрос:")
-    else:
-        await update.message.reply_text("Пожалуйста, введите ваш вопрос:")
-    return ASK_QUESTION
-
-
-async def handle_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_question = update.message.text
-    await update.message.reply_text(f"Ваш вопрос: {user_question}\nСпасибо, мы его получили!")
-    return MENU
-
-
-async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    data = query.data
+    await query.answer()
 
-    if data == "question":
-        return await ask_question_prompt(update, context)
-    elif data == "help":
-        await query.answer()
-        await query.edit_message_text("Вы выбрали: Помощь")
-    else:
-        await query.answer()
-        await query.edit_message_text(f"Неизвестная команда: {data}")
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["change_language"],
+                callback_data="settings_language",
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["back"], callback_data="back"
+            )
+        ],
+    ]
+
+    new_text = LANG_TEXTS[current_language]["settings_menu"]
+    new_reply_markup = InlineKeyboardMarkup(keyboard)
+
+    if query.message.text != new_text or query.message.reply_markup != new_reply_markup:
+        await query.edit_message_text(new_text, reply_markup=new_reply_markup)
+
+    return MENU
+
+
+async def language(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = query.data
+    context.user_data["language"] = current_language
+
+    await set_user_settings(
+        update.effective_user.id,
+        context.user_data["language"],
+    )
+
+    await settings_language(update, context)
+
+
+async def settings_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    languages = [("en", "English"), ("ru", "Русский")]
+
+    keyboard = []
+
+    for language_callback, language in languages:
+        text = f"→ {language} ←" if current_language == language_callback else language
+        keyboard.append([InlineKeyboardButton(text, callback_data=language_callback)])
+
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["back"], callback_data="settings_back"
+            )
+        ]
+    )
+
+    new_text = LANG_TEXTS[current_language]["settings_menu"]
+    new_reply_markup = InlineKeyboardMarkup(keyboard)
+
+    if query.message.text != new_text or query.message.reply_markup != new_reply_markup:
+        await query.edit_message_text(new_text, reply_markup=new_reply_markup)
+
+    return MENU
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton(LANG_TEXTS[current_language]["menu"], callback_data="menu")]]
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["menu"],
+                callback_data="menu"
+            )
+        ]
+    ]
+
     new_reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
         LANG_TEXTS[current_language]["cancel"], reply_markup=new_reply_markup
     )
     return MENU
+
+
+async def save_user_settings(context: ContextTypes.DEFAULT_TYPE):
+    keys_to_keep = ["language"]
+    for key in list(context.user_data.keys()):
+        if key not in keys_to_keep:
+            del context.user_data[key]
 
 
 def main() -> None:
@@ -118,15 +206,17 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             MENU: [
-                CallbackQueryHandler(start, pattern="^menu$")
-            ],
-            ASK_QUESTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_question)]
+                CallbackQueryHandler(start, pattern="^menu$"),
+                CallbackQueryHandler(settings, pattern="^settings$"),
+                CallbackQueryHandler(settings, pattern="^settings_back$"),
+                CallbackQueryHandler(settings_language, pattern="^settings_language$"),
+                CallbackQueryHandler(language, pattern="^(en|ru)$"),
+            ]
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],
     )
 
     application.add_handler(conv_handler)
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, respond_to_text))
-    application.add_handler(CallbackQueryHandler(callback_handler))
+    application.add_handler(CommandHandler("start", start))
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
