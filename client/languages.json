@@ -3,8 +3,9 @@
         "ask": "Ask a Question",
         "settings": "Settings",
         "settings_menu": "Settings menu. Please choose an option:",
+        "change_language": "Change Language",
         "help": "Help",
-        "back": "< Back",
+        "back": "\u2039 Back",
         "menu": "Menu",
         "cancel": "Actions canceled."
     },
@@ -12,8 +13,9 @@
         "ask": "Задать Вопрос",
         "settings": "Настройки",
         "settings_menu": "Меню настроек. Выберите опцию:",
+        "change_language": "Изменить Язык",
         "help": "Помощь",
-        "back": "< Назад",
+        "back": "\u2039 Назад",
         "menu": "Меню",
         "cancel": "Действия отменены."
     }
