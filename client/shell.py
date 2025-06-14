@@ -1,5 +1,7 @@
+import asyncio
 import os
 import json
+import random
 from pathlib import Path
 
 from api_client import get_user_settings, set_user_settings
@@ -21,7 +23,7 @@ languages_path = PY_DIR / "languages.json"
 with open(languages_path, "r", encoding="utf-8") as f:
     LANG_TEXTS = json.load(f)
 
-MENU, ASK_QUESTION = range(2)
+MENU, ASK = range(2)
 
 DEFAULT_LANGUAGE = "ru"
 
@@ -58,7 +60,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [
             InlineKeyboardButton(
                 LANG_TEXTS[current_language]["ask"],
-                callback_data="question"
+                callback_data="ask"
             ),
         ]
     ]
@@ -172,6 +174,61 @@ async def settings_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MENU
 
 
+async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    text = LANG_TEXTS[current_language]["enter_question"]
+
+    if update.message:
+        await update.message.reply_text(text, parse_mode="HTML")
+    else:
+        query = update.callback_query
+        await query.answer()
+        if query.message and query.message.text:
+            await query.edit_message_text(text, parse_mode="HTML")
+        else:
+            await query.message.reply_text(text, parse_mode="HTML")
+
+    return ASK
+
+
+async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):        
+    context.user_data["user_question"] = update.message.text
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    processing_key = f"answering{random.randint(1, 4)}"
+    processing_message = await update.message.reply_text(
+        LANG_TEXTS[current_language][processing_key]
+    )
+
+    await asyncio.sleep(3)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["ask_over"], callback_data="ask"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["menu"], callback_data="menu"
+            )
+        ]
+    ]
+
+    new_reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await processing_message.edit_text(
+        LANG_TEXTS[current_language]["answer"], reply_markup=new_reply_markup
+    )
+
+    return MENU
+
+
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
@@ -211,8 +268,10 @@ def main() -> None:
                 CallbackQueryHandler(settings, pattern="^settings$"),
                 CallbackQueryHandler(settings, pattern="^settings_back$"),
                 CallbackQueryHandler(settings_language, pattern="^settings_language$"),
+                CallbackQueryHandler(ask, pattern="^ask$"),
                 CallbackQueryHandler(language, pattern="^(en|ru)$"),
-            ]
+            ],
+            ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_ask)],
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],
     )
