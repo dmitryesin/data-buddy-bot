@@ -1,6 +1,8 @@
 import psycopg2
 from db.connection import get_psql_connection
-from logger import logger
+import logging
+
+logger = logging.getLogger("uvicorn.error")
 
 psql = get_psql_connection()
 DEFAULT_LANGUAGE = "en"
