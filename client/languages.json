@@ -1,0 +1,18 @@
+{
+    "en": {
+        "ask": "Ask a question",
+        "settings": "Settings",
+        "help": "Help",
+        "back": "< Back",
+        "menu": "Menu",
+        "cancel": "Actions canceled."
+    },
+    "ru": {
+        "ask": "Задать вопрос",
+        "settings": "Настройки",
+        "help": "Помощь",
+        "back": "< Назад",
+        "menu": "Меню",
+        "cancel": "Действия отменены."
+    }
+}
