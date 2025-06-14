@@ -47,8 +47,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
             InlineKeyboardButton(
-                LANG_TEXTS[current_language]["ask"],
-                callback_data="question"
+                LANG_TEXTS[current_language]["settings"],
+                callback_data="settings"
             ),
             InlineKeyboardButton(
                 LANG_TEXTS[current_language]["help"],
@@ -57,8 +57,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ],
         [
             InlineKeyboardButton(
-                LANG_TEXTS[current_language]["settings"],
-                callback_data="settings"
+                LANG_TEXTS[current_language]["ask"],
+                callback_data="question"
             ),
         ]
     ]
