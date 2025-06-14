@@ -6,7 +6,7 @@
         "change_language": "Change Language",
         "help": "Help",
         "back": "\u2039 Back",
-        "menu": "Menu",
+        "menu": "\u2039 Menu",
         "cancel": "Actions canceled."
     },
     "ru": {
@@ -16,7 +16,7 @@
         "change_language": "Изменить Язык",
         "help": "Помощь",
         "back": "\u2039 Назад",
-        "menu": "Меню",
+        "menu": "\u2039 Меню",
         "cancel": "Действия отменены."
     }
 }
