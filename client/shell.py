@@ -1,5 +1,7 @@
+import asyncio
 import os
 import json
+import random
 from pathlib import Path
 
 from api_client import get_user_settings, set_user_settings
@@ -191,6 +193,28 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text(text, parse_mode="HTML")
 
     return ASK
+
+
+async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.edited_message:
+        return ASK
+        
+    context.user_data["user_question"] = update.message.text
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    processing_key = f"answering{random.randint(1, 4)}"
+    processing_message = await update.message.reply_text(
+        LANG_TEXTS[current_language][processing_key]
+    )
+
+    await asyncio.sleep(3)
+
+    await processing_message.edit_text(
+        LANG_TEXTS[current_language]["answer"]
+    )
+
+    return MENU
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
