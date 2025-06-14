@@ -195,10 +195,7 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ASK
 
 
-async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.edited_message:
-        return ASK
-        
+async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):        
     context.user_data["user_question"] = update.message.text
 
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
@@ -210,8 +207,23 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await asyncio.sleep(3)
 
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["ask_over"], callback_data="ask"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["menu"], callback_data="menu"
+            )
+        ]
+    ]
+
+    new_reply_markup = InlineKeyboardMarkup(keyboard)
+
     await processing_message.edit_text(
-        LANG_TEXTS[current_language]["answer"]
+        LANG_TEXTS[current_language]["answer"], reply_markup=new_reply_markup
     )
 
     return MENU
@@ -257,10 +269,9 @@ def main() -> None:
                 CallbackQueryHandler(settings, pattern="^settings_back$"),
                 CallbackQueryHandler(settings_language, pattern="^settings_language$"),
                 CallbackQueryHandler(ask, pattern="^ask$"),
-                CallbackQueryHandler(help, pattern="^help$"),
                 CallbackQueryHandler(language, pattern="^(en|ru)$"),
             ],
-            ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, ask)],
+            ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_ask)],
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],
     )
