@@ -1,15 +1,17 @@
 {
     "en": {
-        "ask": "Ask a question",
+        "ask": "Ask a Question",
         "settings": "Settings",
+        "settings_menu": "Settings menu. Please choose an option:",
         "help": "Help",
         "back": "< Back",
         "menu": "Menu",
         "cancel": "Actions canceled."
     },
     "ru": {
-        "ask": "Задать вопрос",
+        "ask": "Задать Вопрос",
         "settings": "Настройки",
+        "settings_menu": "Меню настроек. Выберите опцию:",
         "help": "Помощь",
         "back": "< Назад",
         "menu": "Меню",
