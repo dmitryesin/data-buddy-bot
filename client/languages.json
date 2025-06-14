@@ -1,24 +1,34 @@
 {
     "en": {
-        "ask": "Ask a Question",
-        "enter_question": "Write your question, and we’ll do our best to respond as quickly as possible.",
+        "ask": "Shoot a Question",
         "settings": "Settings",
-        "settings_menu": "Settings menu. Please choose an option:",
-        "change_language": "Change Language",
+        "settings_menu": "Settings menu. Pick an option: ",
+        "change_language": "Switch Language",
         "help": "Help",
         "back": "\u2039 Back",
         "menu": "\u2039 Menu",
-        "cancel": "Actions canceled."
+        "cancel": "Action canceled.",
+        "enter_question": "Type your question, and I’ll get back to you ASAP.",
+        "answering1": "Cool question, give me a sec...",
+        "answering2": "Processing your question, hang tight...",
+        "answering3": "Question received, hang on a moment...",
+        "answering4": "Hold tight, looking into that now!",
+        "answer": "Here’s the scoop: "
     },
     "ru": {
         "ask": "Задать Вопрос",
-        "enter_question": "Напишите вопрос, который вас интересует, и мы постараемся ответить в кратчайшие сроки.",
         "settings": "Настройки",
-        "settings_menu": "Меню настроек. Выберите опцию:",
+        "settings_menu": "Меню настроек. Выберите опцию: ",
         "change_language": "Изменить Язык",
         "help": "Помощь",
         "back": "\u2039 Назад",
         "menu": "\u2039 Меню",
-        "cancel": "Действия отменены."
+        "cancel": "Действия отменены.",
+        "enter_question": "Напишите вопрос, который вас интересует, и я постараюсь ответить в кратчайшие сроки.",
+        "answering1": "Интересный вопрос, дайте мне немного времени...",
+        "answering2": "Обрабатываю ваш вопрос, подождите немного...",
+        "answering3": "Вопрос получен, подождите немного...",
+        "answering4": "Держитесь, я уже в пути!",
+        "answer": "Вот, что удалось узнать: "
     }
 }
