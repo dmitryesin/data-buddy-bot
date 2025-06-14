@@ -206,6 +206,7 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             MENU: [
+                CallbackQueryHandler(start, pattern="^back$"),
                 CallbackQueryHandler(start, pattern="^menu$"),
                 CallbackQueryHandler(settings, pattern="^settings$"),
                 CallbackQueryHandler(settings, pattern="^settings_back$"),
