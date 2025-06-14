@@ -21,7 +21,7 @@ languages_path = PY_DIR / "languages.json"
 with open(languages_path, "r", encoding="utf-8") as f:
     LANG_TEXTS = json.load(f)
 
-MENU, ASK_QUESTION = range(2)
+MENU, ASK = range(2)
 
 DEFAULT_LANGUAGE = "ru"
 
@@ -172,6 +172,27 @@ async def settings_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MENU
 
 
+async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    text = LANG_TEXTS[current_language]["enter_question"]
+
+    if update.message:
+        await update.message.reply_text(text, parse_mode="HTML")
+    else:
+        query = update.callback_query
+        await query.answer()
+        if query.message and query.message.text:
+            await query.edit_message_text(text, parse_mode="HTML")
+        else:
+            await query.message.reply_text(text, parse_mode="HTML")
+
+    return ASK
+
+
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
@@ -211,8 +232,11 @@ def main() -> None:
                 CallbackQueryHandler(settings, pattern="^settings$"),
                 CallbackQueryHandler(settings, pattern="^settings_back$"),
                 CallbackQueryHandler(settings_language, pattern="^settings_language$"),
+                CallbackQueryHandler(ask, pattern="^ask$"),
+                CallbackQueryHandler(help, pattern="^help$"),
                 CallbackQueryHandler(language, pattern="^(en|ru)$"),
-            ]
+            ],
+            ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, ask)],
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],
     )
