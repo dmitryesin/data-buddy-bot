@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
 from data_access.connection import get_psql_connection
