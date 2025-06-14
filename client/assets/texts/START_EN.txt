@@ -1,5 +1,5 @@
-Hello! 👋
+Yo! 👋
 
-I'm a bot that helps answer frequently asked questions.
+I’m the bot with the answers (well, most of ‘em 😎).
 
-To get started, click the <b>Ask a Question</b> button below.
+Tap <b>Shoot a Question</b> and fire away!
