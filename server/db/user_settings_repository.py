@@ -1,16 +1,9 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
-
-from data_access.connection import get_psql_connection
-from logger import logger
 import psycopg2
-
-app = FastAPI()
+from db.connection import get_psql_connection
+from logger import logger
 
 psql = get_psql_connection()
-
 DEFAULT_LANGUAGE = "en"
-
 
 async def save_user_settings_to_psql(user_id: int, user_settings: dict):
     if psql is None:
@@ -60,21 +53,3 @@ async def get_user_settings_from_psql(user_id: int) -> dict:
         raise
 
     return {'language': DEFAULT_LANGUAGE}
-
-
-@app.post("/users/{user_id}/settings")
-async def set_user_settings_api(user_id, language):
-    try:
-        await save_user_settings_to_psql(user_id, {"language": language})
-        return JSONResponse(content={"status": "ok"})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to save user settings")
-
-
-@app.get("/users/{user_id}/settings")
-async def get_user_settings_api(user_id):
-    try:
-        settings = await get_user_settings_from_psql(user_id)
-        return JSONResponse(content=settings)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch user settings")
