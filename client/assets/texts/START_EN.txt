@@ -1,0 +1,5 @@
+Hello! 👋
+
+I'm a bot that helps answer frequently asked questions.
+
+To get started, click the <b>Ask a Question</b> button below.
