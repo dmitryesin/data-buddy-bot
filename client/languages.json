@@ -1,6 +1,7 @@
 {
     "en": {
         "ask": "Ask a Question",
+        "enter_question": "Write your question, and we’ll do our best to respond as quickly as possible.",
         "settings": "Settings",
         "settings_menu": "Settings menu. Please choose an option:",
         "change_language": "Change Language",
@@ -11,6 +12,7 @@
     },
     "ru": {
         "ask": "Задать Вопрос",
+        "enter_question": "Напишите вопрос, который вас интересует, и мы постараемся ответить в кратчайшие сроки.",
         "settings": "Настройки",
         "settings_menu": "Меню настроек. Выберите опцию:",
         "change_language": "Изменить Язык",
