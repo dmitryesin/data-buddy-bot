@@ -1,6 +1,7 @@
 {
     "en": {
         "ask": "Shoot a Question",
+        "ask_over": "Shoot Another!",
         "settings": "Settings",
         "settings_menu": "Settings menu. Pick an option: ",
         "change_language": "Switch Language",
@@ -17,6 +18,7 @@
     },
     "ru": {
         "ask": "Задать Вопрос",
+        "ask_over": "Задать Еще!",
         "settings": "Настройки",
         "settings_menu": "Меню настроек. Выберите опцию: ",
         "change_language": "Изменить Язык",
