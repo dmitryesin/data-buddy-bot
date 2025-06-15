@@ -9,7 +9,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 HEADERS = {
     "Authorization": f"Bearer {OPENAI_API_KEY}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
 }
 
 
@@ -37,32 +37,40 @@ async def ask_llm(question, language):
         "model": "gpt-4o-mini",
         "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": question}
+            {"role": "user", "content": question},
         ],
         "temperature": 0.7,
         "top_p": 0.9,
-        "max_tokens": 500
+        "max_tokens": 500,
     }
 
     proxy = "http://127.0.0.1:10808"
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.post(OPENAI_API_URL, headers=HEADERS, json=payload, proxy=proxy) as response:
+            async with session.post(
+                OPENAI_API_URL, headers=HEADERS, json=payload, proxy=proxy
+            ) as response:
                 if response.status != 200:
                     error_text = await response.text()
-                    logger.error(f"LLM API error: {response.status}. Details: {error_text}")
+                    logger.error(
+                        f"LLM API error: {response.status}. Details: {error_text}"
+                    )
                     return "Request error."
 
                 data = await response.json()
                 try:
                     answer = data["choices"][0]["message"]["content"]
-                    logger.info(f"LLM response received successfully for question: {question[:50]}...")
+                    logger.info(
+                        f"LLM response received successfully for question: {question[:50]}..."
+                    )
                     return answer
                 except (KeyError, IndexError) as e:
-                    logger.error(f"Response parsing error: {str(e)}. Raw response: {data}")
+                    logger.error(
+                        f"Response parsing error: {str(e)}. Raw response: {data}"
+                    )
                     return "Response parsing error."
-                    
+
     except Exception as e:
         logger.error(f"LLM connection error: {str(e)}")
         return "Connection error."

@@ -21,7 +21,7 @@ async def save_user_answer_to_psql(user_id, answer):
                 INSERT INTO user_answers (user_id, answer)
                 VALUES (%s, %s);
                 """,
-                (user_id, answer_json)
+                (user_id, answer_json),
             )
             psql.commit()
             logger.info(f"User answer saved to database for user_id: {user_id}")
@@ -30,7 +30,7 @@ async def save_user_answer_to_psql(user_id, answer):
         raise
 
 
-async def get_user_answers_from_psql(user_id, limit):
+async def get_user_answers_from_psql(user_id):
     if psql is None:
         logger.warning("Database connection is not available.")
         return []
@@ -45,18 +45,21 @@ async def get_user_answers_from_psql(user_id, limit):
                 ORDER BY created_at DESC 
                 LIMIT 5;
                 """,
-                (user_id, limit)
+                (user_id,),
             )
             results = cursor.fetchall()
-            
+
             answers = []
             for row in results:
-                answer_data = json.loads(row[0])
-                answers.append({
-                    "answer": answer_data["answer"],
-                    "created_at": row[1].isoformat()
-                })
-            
+                if isinstance(row[0], str):
+                    answer_data = json.loads(row[0])
+                else:
+                    answer_data = row[0]
+
+                answers.append(
+                    {"answer": answer_data["answer"], "created_at": row[1].isoformat()}
+                )
+
             return answers
     except psycopg2.Error as e:
         logger.error(f"Failed to get user answers from database: {e}")
