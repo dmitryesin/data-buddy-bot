@@ -8,6 +8,8 @@ from api_client import (
     set_user_settings,
     set_user_question,
     ask_question,
+    get_user_answers,
+    get_user_questions,
 )
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -35,7 +37,7 @@ DEFAULT_LANGUAGE = "ru"
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.edited_message:
         return MENU
-    
+
     user_settings = await get_user_settings(
         update.effective_user.id,
         DEFAULT_LANGUAGE,
@@ -53,20 +55,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
             InlineKeyboardButton(
-                LANG_TEXTS[current_language]["settings"],
-                callback_data="settings"
-            ),
-            InlineKeyboardButton(
-                LANG_TEXTS[current_language]["help"],
-                callback_data="help"
+                LANG_TEXTS[current_language]["ask"], callback_data="ask"
             ),
         ],
         [
             InlineKeyboardButton(
-                LANG_TEXTS[current_language]["ask"],
-                callback_data="ask"
+                LANG_TEXTS[current_language]["history"], callback_data="history"
             ),
-        ]
+        ],
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["settings"], callback_data="settings"
+            ),
+        ],
     ]
 
     texts = {}
@@ -79,9 +80,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if update.message:
         await update.message.reply_text(
-            text_to_send,
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode="HTML"
+            text_to_send, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="HTML"
         )
     else:
         query = update.callback_query
@@ -90,15 +89,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text(
                 text_to_send,
                 reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode="HTML"
+                parse_mode="HTML",
             )
         else:
             await query.message.reply_text(
                 text_to_send,
                 reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode="HTML"
+                parse_mode="HTML",
             )
-
 
     return MENU
 
@@ -178,6 +176,120 @@ async def settings_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MENU
 
 
+async def question_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+    recent_questions = await get_user_questions(update.effective_user.id)
+
+    keyboard = []
+
+    if not recent_questions:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    LANG_TEXTS[current_language]["back"], callback_data="back"
+                )
+            ]
+        )
+
+        await query.edit_message_text(
+            LANG_TEXTS[current_language]["no_history"],
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+        return MENU
+
+    for index, question in enumerate(recent_questions):
+        question_text = question.get("question")
+        display_text = (
+            question_text if len(question_text) <= 50 else question_text[:47] + "..."
+        )
+
+        keyboard.append(
+            [InlineKeyboardButton(display_text, callback_data=f"question_{index}")]
+        )
+
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["back"], callback_data="back"
+            )
+        ]
+    )
+
+    await query.edit_message_text(
+        LANG_TEXTS[current_language]["history_menu"],
+        reply_markup=InlineKeyboardMarkup(keyboard),
+    )
+
+    return MENU
+
+
+async def question_history_details(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
+
+    question_index = int(query.data.split("_")[1])
+
+    recent_questions = await get_user_questions(update.effective_user.id)
+    recent_answers = await get_user_answers(update.effective_user.id)
+
+    if question_index >= len(recent_questions):
+        await query.edit_message_text(
+            LANG_TEXTS[current_language]["question_not_found"],
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            LANG_TEXTS[current_language]["back"],
+                            callback_data="history",
+                        )
+                    ]
+                ]
+            ),
+        )
+        return MENU
+
+    question = recent_questions[question_index]
+    question_text = question.get("question", "")
+    question_date = question.get("created_at", "")
+
+    answer_text = ""
+    if recent_answers and question_index < len(recent_answers):
+        answer = recent_answers[question_index]
+        answer_text = answer.get("answer", "")
+
+    lang = LANG_TEXTS[current_language]
+    details = [
+        f"<b>{lang['question_details']}</b>",
+        f"<b>{lang['question_question']}:</b> {question_text}",
+        f"<b>{lang['question_answer']}:</b> {answer_text}",
+    ]
+
+    if question_date:
+        date_part, time_part = question_date.split("T")
+        details.append(f"<b>{lang['question_date']}:</b> {date_part} {time_part[:8]}")
+
+    details_text = "\n\n".join(details)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                LANG_TEXTS[current_language]["back"], callback_data="history"
+            )
+        ]
+    ]
+
+    await query.edit_message_text(
+        details_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="HTML"
+    )
+
+    return MENU
+
+
 async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -199,7 +311,7 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ASK
 
 
-async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):        
+async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["user_question"] = update.message.text
 
     await set_user_question(update.effective_user.id, update.message.text)
@@ -217,10 +329,11 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 LANG_TEXTS[current_language]["ask_over"], callback_data="ask"
             )
         ],
-        [            InlineKeyboardButton(
+        [
+            InlineKeyboardButton(
                 LANG_TEXTS[current_language]["menu"], callback_data="menu"
             )
-        ]
+        ],
     ]
 
     new_reply_markup = InlineKeyboardMarkup(keyboard)
@@ -228,9 +341,7 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     answer = await ask_question(update.effective_user.id, question, current_language)
 
     await processing_message.edit_text(
-        answer,
-        reply_markup=new_reply_markup,
-        parse_mode="HTML"
+        answer, reply_markup=new_reply_markup, parse_mode="HTML"
     )
 
     return MENU
@@ -242,8 +353,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
             InlineKeyboardButton(
-                LANG_TEXTS[current_language]["menu"],
-                callback_data="menu"
+                LANG_TEXTS[current_language]["menu"], callback_data="menu"
             )
         ]
     ]
@@ -254,13 +364,6 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         LANG_TEXTS[current_language]["cancel"], reply_markup=new_reply_markup
     )
     return MENU
-
-
-async def save_user_settings(context: ContextTypes.DEFAULT_TYPE):
-    keys_to_keep = ["language"]
-    for key in list(context.user_data.keys()):
-        if key not in keys_to_keep:
-            del context.user_data[key]
 
 
 def main() -> None:
@@ -277,6 +380,10 @@ def main() -> None:
                 CallbackQueryHandler(settings_language, pattern="^settings_language$"),
                 CallbackQueryHandler(ask, pattern="^ask$"),
                 CallbackQueryHandler(language, pattern="^(en|ru)$"),
+                CallbackQueryHandler(question_history, pattern="^history$"),
+                CallbackQueryHandler(
+                    question_history_details, pattern=r"^question_\d+$"
+                ),
             ],
             ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_ask)],
         },
