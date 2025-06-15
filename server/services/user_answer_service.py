@@ -4,11 +4,11 @@ import logging
 
 logger = logging.getLogger("uvicorn.error")
 
-OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+OPENAI_API_URL = os.getenv("OPENAI_API_URL")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 HEADERS = {
-    "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+    "Authorization": f"Bearer {OPENAI_API_KEY}",
     "Content-Type": "application/json"
 }
 
