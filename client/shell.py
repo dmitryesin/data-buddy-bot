@@ -264,14 +264,13 @@ async def question_history_details(update: Update, context: ContextTypes.DEFAULT
 
     lang = LANG_TEXTS[current_language]
     details = [
-        f"<b>{lang['question_details']}</b>",
-        f"<b>{lang['question_question']}:</b> {question_text}",
-        f"<b>{lang['question_answer']}:</b> {answer_text}",
+        f"<b>{lang['question_question']}</b>{question_text}",
+        f"<b>{lang['question_answer']}</b>{answer_text}",
     ]
 
     if question_date:
         date_part, time_part = question_date.split("T")
-        details.append(f"<b>{lang['question_date']}:</b> {date_part} {time_part[:8]}")
+        details.append(f"<b>{lang['question_date']}</b>{date_part} {time_part[:8]}")
 
     details_text = "\n\n".join(details)
 
