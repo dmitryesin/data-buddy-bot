@@ -18,7 +18,7 @@
         "answer": "Here's the scoop: ",
         "question_not_found": "Question not found.",
         "no_history": "No question history available.",
-        "question_details": "Question details:",
+        "question_details": "Question details: ",
         "question_question": "Question: ",
         "question_answer": "Answer: ",
         "question_date": "Date: "
@@ -42,7 +42,7 @@
         "answer": "Вот, что удалось узнать: ",
         "question_not_found": "Вопрос не найден.",
         "no_history": "История вопросов отсутствует.",
-        "question_details": "Детали вопроса:",
+        "question_details": "Детали вопроса: ",
         "question_question": "Вопрос: ",
         "question_answer": "Ответ: ",
         "question_date": "Дата: "
