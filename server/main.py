@@ -11,6 +11,7 @@ app.include_router(user_answer_router)
 
 if __name__ == "__main__":
     import uvicorn
+
     host = os.getenv("SERVER_HOST", "0.0.0.0")
     port = int(os.getenv("SERVER_PORT", "8000"))
-    uvicorn.run("main:app", host=host, port=port, reload=True)
+    uvicorn.run("main:app", host=host, port=port)
