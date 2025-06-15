@@ -8,7 +8,7 @@ logger = logging.getLogger("uvicorn.error")
 psql = get_psql_connection()
 
 
-async def save_user_question_to_psql(user_id: int, question: str):
+async def save_user_question_to_psql(user_id, question):
     if psql is None:
         logger.warning("Database connection is not available. Skipping save operation.")
         return
