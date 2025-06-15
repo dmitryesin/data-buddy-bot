@@ -38,3 +38,17 @@ async def get_user_settings(user_id, language):
             except json.JSONDecodeError:
                 return text
             return data
+
+
+async def set_user_question(user_id, question):
+    payload = {
+        "question": question,
+    }
+
+    timeout = ClientTimeout(total=REQUEST_TIMEOUT)
+    async with ClientSession(timeout=timeout) as session:
+        async with session.post(
+            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/question", params=payload
+        ) as response:
+            response.raise_for_status()
+            return await response.text()
