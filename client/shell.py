@@ -1,4 +1,3 @@
-import asyncio
 import os
 import json
 import random
@@ -8,6 +7,7 @@ from api_client import (
     get_user_settings,
     set_user_settings,
     set_user_question,
+    ask_question,
 )
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -211,25 +211,26 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
         LANG_TEXTS[current_language][processing_key]
     )
 
-    await asyncio.sleep(3)
-
     keyboard = [
         [
             InlineKeyboardButton(
                 LANG_TEXTS[current_language]["ask_over"], callback_data="ask"
             )
         ],
-        [
-            InlineKeyboardButton(
+        [            InlineKeyboardButton(
                 LANG_TEXTS[current_language]["menu"], callback_data="menu"
             )
         ]
     ]
 
     new_reply_markup = InlineKeyboardMarkup(keyboard)
+    question = update.message.text
+    answer = await ask_question(update.effective_user.id, question, current_language)
 
     await processing_message.edit_text(
-        LANG_TEXTS[current_language]["answer"], reply_markup=new_reply_markup
+        answer,
+        reply_markup=new_reply_markup,
+        parse_mode="HTML"
     )
 
     return MENU
