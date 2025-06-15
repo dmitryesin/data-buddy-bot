@@ -2,4 +2,6 @@ Yo! 👋
 
 I’m the bot with the answers (well, most of ‘em 😎).
 
+I specialize in questions about starting an LLC in Russia.
+
 Tap <b>Shoot a Question</b> and fire away!
