@@ -5,6 +5,7 @@ from services.user_settings_service import save_user_settings, get_user_settings
 
 router = APIRouter()
 
+
 @router.post("/users/{user_id}/settings")
 async def set_user_settings_api(user_id: int, language: str):
     try:

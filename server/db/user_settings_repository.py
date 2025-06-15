@@ -7,6 +7,7 @@ logger = logging.getLogger("uvicorn.error")
 psql = get_psql_connection()
 DEFAULT_LANGUAGE = "en"
 
+
 async def save_user_settings_to_psql(user_id: int, user_settings: dict):
     if psql is None:
         logger.warning("Database connection is not available. Skipping save operation.")

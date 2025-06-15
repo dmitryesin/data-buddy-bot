@@ -7,6 +7,7 @@ logger = logging.getLogger("uvicorn.error")
 
 load_dotenv()
 
+
 def get_psql_connection():
     try:
         return psycopg2.connect(
