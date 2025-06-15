@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.post("/users/{user_id}/settings")
-async def set_user_settings_api(user_id: int, language: str):
+async def set_user_settings_api(user_id, language):
     try:
         await save_user_settings(user_id, {"language": language})
         return JSONResponse(content={"status": "ok"})
@@ -16,7 +16,7 @@ async def set_user_settings_api(user_id: int, language: str):
 
 
 @router.get("/users/{user_id}/settings")
-async def get_user_settings_api(user_id: int):
+async def get_user_settings_api(user_id):
     try:
         settings = await get_user_settings(user_id)
         return JSONResponse(content=settings)
