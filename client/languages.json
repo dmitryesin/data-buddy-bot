@@ -5,16 +5,23 @@
         "settings": "Settings",
         "settings_menu": "Settings menu. Pick an option: ",
         "change_language": "Switch Language",
-        "help": "Help",
+        "history": "Question History",
+        "history_menu": "Question history menu. Pick an option: ",
         "back": "\u2039 Back",
         "menu": "\u2039 Menu",
         "cancel": "Action canceled.",
-        "enter_question": "Type your question, and I’ll get back to you ASAP.",
+        "enter_question": "Type your question, and I'll get back to you ASAP.",
         "answering1": "Cool question, give me a sec...",
         "answering2": "Processing your question, hang tight...",
         "answering3": "Question received, hang on a moment...",
         "answering4": "Hold tight, looking into that now!",
-        "answer": "Here’s the scoop: "
+        "answer": "Here's the scoop: ",
+        "question_not_found": "Question not found.",
+        "no_history": "No question history available.",
+        "question_details": "Question details:",
+        "question_question": "Question: ",
+        "question_answer": "Answer: ",
+        "question_date": "Date: "
     },
     "ru": {
         "ask": "Задать Вопрос",
@@ -22,7 +29,8 @@
         "settings": "Настройки",
         "settings_menu": "Меню настроек. Выберите опцию: ",
         "change_language": "Изменить Язык",
-        "help": "Помощь",
+        "history": "История Вопросов",
+        "history_menu": "Меню истории вопросов. Выберите опцию: ",
         "back": "\u2039 Назад",
         "menu": "\u2039 Меню",
         "cancel": "Действия отменены.",
@@ -31,6 +39,12 @@
         "answering2": "Обрабатываю ваш вопрос, подождите немного...",
         "answering3": "Вопрос получен, подождите немного...",
         "answering4": "Держитесь, я уже в пути!",
-        "answer": "Вот, что удалось узнать: "
+        "answer": "Вот, что удалось узнать: ",
+        "question_not_found": "Вопрос не найден.",
+        "no_history": "История вопросов отсутствует.",
+        "question_details": "Детали вопроса:",
+        "question_question": "Вопрос: ",
+        "question_answer": "Ответ: ",
+        "question_date": "Дата: "
     }
 }
