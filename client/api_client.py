@@ -87,3 +87,18 @@ async def get_user_answers(user_id):
                 return data.get("answers", [])
             except json.JSONDecodeError:
                 return []
+
+
+async def get_user_questions(user_id):
+    timeout = ClientTimeout(total=REQUEST_TIMEOUT)
+    async with ClientSession(timeout=timeout) as session:
+        async with session.get(
+            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/questions"
+        ) as response:
+            response.raise_for_status()
+            text = await response.text()
+            try:
+                data = json.loads(text)
+                return data.get("questions", [])
+            except json.JSONDecodeError:
+                return []
