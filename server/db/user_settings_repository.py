@@ -5,9 +5,9 @@ import logging
 logger = logging.getLogger("uvicorn.error")
 
 psql = get_psql_connection()
-DEFAULT_LANGUAGE = "en"
 
-async def save_user_settings_to_psql(user_id: int, user_settings: dict):
+
+async def save_user_settings_to_psql(user_id, user_settings):
     if psql is None:
         logger.warning("Database connection is not available. Skipping save operation.")
         return
@@ -23,7 +23,7 @@ async def save_user_settings_to_psql(user_id: int, user_settings: dict):
                 """,
                 (
                     user_id,
-                    user_settings.get('language', DEFAULT_LANGUAGE),
+                    user_settings.get('language', 'en'),
                 )
             )
             psql.commit()
@@ -32,10 +32,10 @@ async def save_user_settings_to_psql(user_id: int, user_settings: dict):
         raise
 
 
-async def get_user_settings_from_psql(user_id: int) -> dict:
+async def get_user_settings_from_psql(user_id):
     if psql is None:
         logger.warning("Database connection is not available. Returning default user settings.")
-        return {'language': DEFAULT_LANGUAGE}
+        return {'language': 'en'}
 
     try:
         with psql.cursor() as cursor:
@@ -54,4 +54,4 @@ async def get_user_settings_from_psql(user_id: int) -> dict:
         logger.error(f"Failed to fetch user settings from database: {e}")
         raise
 
-    return {'language': DEFAULT_LANGUAGE}
+    return {'language': 'en'}

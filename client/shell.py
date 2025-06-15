@@ -1,10 +1,14 @@
-import asyncio
 import os
 import json
 import random
 from pathlib import Path
 
-from api_client import get_user_settings, set_user_settings
+from api_client import (
+    get_user_settings,
+    set_user_settings,
+    set_user_question,
+    ask_question,
+)
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -198,6 +202,8 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):        
     context.user_data["user_question"] = update.message.text
 
+    await set_user_question(update.effective_user.id, update.message.text)
+
     current_language = context.user_data.get("language", DEFAULT_LANGUAGE)
 
     processing_key = f"answering{random.randint(1, 4)}"
@@ -205,25 +211,26 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
         LANG_TEXTS[current_language][processing_key]
     )
 
-    await asyncio.sleep(3)
-
     keyboard = [
         [
             InlineKeyboardButton(
                 LANG_TEXTS[current_language]["ask_over"], callback_data="ask"
             )
         ],
-        [
-            InlineKeyboardButton(
+        [            InlineKeyboardButton(
                 LANG_TEXTS[current_language]["menu"], callback_data="menu"
             )
         ]
     ]
 
     new_reply_markup = InlineKeyboardMarkup(keyboard)
+    question = update.message.text
+    answer = await ask_question(update.effective_user.id, question, current_language)
 
     await processing_message.edit_text(
-        LANG_TEXTS[current_language]["answer"], reply_markup=new_reply_markup
+        answer,
+        reply_markup=new_reply_markup,
+        parse_mode="HTML"
     )
 
     return MENU
@@ -274,6 +281,7 @@ def main() -> None:
             ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_ask)],
         },
         fallbacks=[CommandHandler("cancel", cancel), CommandHandler("start", start)],
+        per_message=False,
     )
 
     application.add_handler(conv_handler)
