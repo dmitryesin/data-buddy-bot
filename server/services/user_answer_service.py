@@ -44,12 +44,10 @@ async def ask_llm(question, language):
         "max_tokens": 500,
     }
 
-    proxy = "http://127.0.0.1:10808"
-
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                OPENAI_API_URL, headers=HEADERS, json=payload, proxy=proxy
+                OPENAI_API_URL, headers=HEADERS, json=payload
             ) as response:
                 if response.status != 200:
                     error_text = await response.text()
