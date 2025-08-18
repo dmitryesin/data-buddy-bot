@@ -1,7 +1,7 @@
-aiohttp==3.11.16
-asyncio==3.4.3
-fastapi==0.115.12
+aiohttp==3.12.15
+fastapi==0.116.1
+openai==1.99.9
 psycopg2-binary==2.9.10
-python-dotenv==1.1.0
-python-telegram-bot==22.0
-uvicorn==0.34.3
+python-dotenv==1.1.1
+python-telegram-bot==22.3
+uvicorn==0.35.0
