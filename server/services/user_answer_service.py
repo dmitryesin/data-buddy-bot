@@ -1,16 +1,14 @@
-import aiohttp
-import os
 import logging
+import os
+
+from openai import AsyncOpenAI
 
 logger = logging.getLogger("uvicorn.error")
 
-OPENAI_API_URL = os.getenv("OPENAI_API_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_URL = os.getenv("OPENAI_API_URL")
 
-HEADERS = {
-    "Authorization": f"Bearer {OPENAI_API_KEY}",
-    "Content-Type": "application/json",
-}
+client = AsyncOpenAI(base_url=OPENAI_API_URL, api_key=OPENAI_API_KEY)
 
 
 async def ask_llm(question, language):
@@ -32,43 +30,26 @@ async def ask_llm(question, language):
         )
     else:
         logger.error(f"Unsupported language: {language}.")
-
-    payload = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": question},
-        ],
-        "temperature": 0.7,
-        "top_p": 0.9,
-        "max_tokens": 500,
-    }
+        return "Unsupported language."
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                OPENAI_API_URL, headers=HEADERS, json=payload
-            ) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(
-                        f"LLM API error: {response.status}. Details: {error_text}"
-                    )
-                    return "Request error."
+        response = await client.chat.completions.create(
+            model="gpt-4.1-nano-2025-04-14",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": question},
+            ],
+            temperature=0.7,
+            top_p=0.9,
+            max_tokens=500,
+        )
 
-                data = await response.json()
-                try:
-                    answer = data["choices"][0]["message"]["content"]
-                    logger.info(
-                        f"LLM response received successfully for question: {question[:50]}..."
-                    )
-                    return answer
-                except (KeyError, IndexError) as e:
-                    logger.error(
-                        f"Response parsing error: {str(e)}. Raw response: {data}"
-                    )
-                    return "Response parsing error."
+        answer = response.choices[0].message.content
+        logger.info(
+            f"LLM response received successfully for question: {question[:50]}..."
+        )
+        return answer
 
     except Exception as e:
-        logger.error(f"LLM connection error: {str(e)}")
-        return "Connection error."
+        logger.error(f"LLM API error: {str(e)}")
+        return "Connection or API error."
