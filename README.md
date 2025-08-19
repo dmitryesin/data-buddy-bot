@@ -1,1 +1,1 @@
-# the_bureaucracy_buster_bot
+<h1 align="center"> Data Buddy Bot: AI Powered Web & Knowledge Assistant </h1>
