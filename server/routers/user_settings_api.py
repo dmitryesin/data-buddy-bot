@@ -21,4 +21,4 @@ async def get_user_settings_api(user_id):
         settings = await get_user_settings(user_id)
         return JSONResponse(content=settings)
     except Exception:
-        raise HTTPException(status_code=500, detail="Failed to fetch user settings")
+        raise HTTPException(status_code=404, detail="Failed to fetch user settings")
