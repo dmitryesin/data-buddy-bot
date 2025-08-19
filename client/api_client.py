@@ -26,7 +26,7 @@ async def get_user_settings(user_id, language):
         async with session.get(
             f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings"
         ) as response:
-            if response.status == 500:
+            if response.status == 404:
                 return {
                     "language": language,
                 }
