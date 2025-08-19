@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: client/Dockerfile
-    container_name: the-bureaucracy-buster-bot-client
+    container_name: data-buddy-bot-client
     working_dir: /client
     env_file:
       - .env
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
-    container_name: the-bureaucracy-buster-bot-server
+    container_name: data-buddy-bot-server
     working_dir: /server
     env_file:
       - .env
@@ -40,7 +40,7 @@ services:
 
   database:
     image: postgres:17.5-alpine
-    container_name: the-bureaucracy-buster-bot-database
+    container_name: data-buddy-bot-database
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
