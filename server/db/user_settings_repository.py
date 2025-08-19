@@ -52,8 +52,8 @@ async def get_user_settings_from_psql(user_id):
             result = cursor.fetchone()
             if result:
                 return {"language": result[0]}
+            else:
+                raise ValueError()
     except psycopg2.Error as e:
         logger.error(f"Failed to fetch user settings from database: {e}")
         raise
-
-    return {"language": "en"}
