@@ -1,1 +1,1 @@
-<h1 align="center"> Data Buddy Bot: AI Powered Web & Knowledge Assistant </h1>
+<h1 align="center"> DataBuddy Bot: AI Powered Web & Knowledge Assistant </h1>
