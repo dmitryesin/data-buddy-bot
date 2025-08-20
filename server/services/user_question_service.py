@@ -1,13 +1,14 @@
-from db.user_question_repository import (
-    save_user_question_to_psql,
-    get_user_questions_from_psql,
-)
+import logging
+
 from db.user_answer_repository import (
-    save_user_answer_to_psql,
     get_user_answers_from_psql,
+    save_user_answer_to_psql,
+)
+from db.user_question_repository import (
+    get_user_questions_from_psql,
+    save_user_question_to_psql,
 )
 from services.user_answer_service import ask_llm
-import logging
 
 logger = logging.getLogger("uvicorn.error")
 

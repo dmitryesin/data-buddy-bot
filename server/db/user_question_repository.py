@@ -1,7 +1,8 @@
-import psycopg2
 import json
-from db.connection import get_psql_connection
 import logging
+
+import psycopg2
+from db.connection import get_psql_connection
 
 logger = logging.getLogger("uvicorn.error")
 

@@ -1,6 +1,6 @@
 from db.user_settings_repository import (
-    save_user_settings_to_psql,
     get_user_settings_from_psql,
+    save_user_settings_to_psql,
 )
 
 

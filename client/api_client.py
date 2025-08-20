@@ -1,7 +1,7 @@
 import json
 import os
 
-from aiohttp import ClientTimeout, ClientSession
+from aiohttp import ClientSession, ClientTimeout
 
 REQUEST_TIMEOUT = 60
 

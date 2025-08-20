@@ -1,17 +1,17 @@
-import os
 import json
+import os
 import random
 from pathlib import Path
 
 from api_client import (
-    get_user_settings,
-    set_user_settings,
-    set_user_question,
     ask_question,
     get_user_answers,
     get_user_questions,
+    get_user_settings,
+    set_user_question,
+    set_user_settings,
 )
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     Application,
     CallbackQueryHandler,

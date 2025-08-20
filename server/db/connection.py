@@ -1,7 +1,8 @@
+import logging
 import os
+
 import psycopg2
 from dotenv import load_dotenv
-import logging
 
 logger = logging.getLogger("uvicorn.error")
 

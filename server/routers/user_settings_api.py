@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-
-from services.user_settings_service import save_user_settings, get_user_settings
+from services.user_settings_service import get_user_settings, save_user_settings
 
 router = APIRouter()
 
