@@ -31,7 +31,7 @@ with open(languages_path, "r", encoding="utf-8") as f:
 
 MENU, ASK = range(2)
 
-DEFAULT_LANGUAGE = "ru"
+DEFAULT_LANGUAGE = "en"
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
