@@ -14,7 +14,7 @@ async def set_user_settings(user_id, language):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.post(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings", params=payload
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/settings", params=payload
         ) as response:
             response.raise_for_status()
             return await response.text()
@@ -24,7 +24,7 @@ async def get_user_settings(user_id, language):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/settings"
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/settings"
         ) as response:
             if response.status == 404:
                 return {
@@ -48,7 +48,7 @@ async def set_user_question(user_id, question):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.post(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/question", json=payload
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/question", json=payload
         ) as response:
             response.raise_for_status()
             return await response.text()
@@ -63,7 +63,7 @@ async def ask_question(user_id, question, language):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.post(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/ask", json=payload
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/ask", json=payload
         ) as response:
             response.raise_for_status()
             text = await response.text()
@@ -78,7 +78,7 @@ async def get_user_answers(user_id):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/answers"
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/answers"
         ) as response:
             response.raise_for_status()
             text = await response.text()
@@ -93,7 +93,7 @@ async def get_user_questions(user_id):
     timeout = ClientTimeout(total=REQUEST_TIMEOUT)
     async with ClientSession(timeout=timeout) as session:
         async with session.get(
-            f"{os.getenv('CLIENT_API_URL')}/users/{user_id}/questions"
+            f"{os.getenv('SERVER_API_URL')}/users/{user_id}/questions"
         ) as response:
             response.raise_for_status()
             text = await response.text()
