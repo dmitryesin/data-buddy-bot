@@ -10,8 +10,8 @@ async def set_user_settings_api(user_id, language):
     try:
         await save_user_settings(user_id, {"language": language})
         return JSONResponse(content={"status": "ok"})
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to save user settings")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save user settings: {str(e)}")
 
 
 @router.get("/users/{user_id}/settings")
@@ -19,5 +19,5 @@ async def get_user_settings_api(user_id):
     try:
         settings = await get_user_settings(user_id)
         return JSONResponse(content=settings)
-    except Exception:
-        raise HTTPException(status_code=404, detail="Failed to fetch user settings")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Failed to fetch user settings: {str(e)}")
