@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, HTTPException
 from services.user_question_service import get_user_questions
 
 router = APIRouter()
