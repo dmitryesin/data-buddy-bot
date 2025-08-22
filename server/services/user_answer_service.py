@@ -24,6 +24,7 @@ async def ask_llm(question, language):
             "6. Always respond only in English, even if the user asks in another language. "
             "7. Do not use formatting such as bold text, markdown, or additional symbols — provide plain text answers only. "
             "8. Make short, concise responses that directly address the user’s question without unnecessary elaboration. "
+            "9. Do not include links to sources, as they may not be accessible to the user. "
         )
     elif language == "ru":
         system_prompt = (
@@ -37,6 +38,7 @@ async def ask_llm(question, language):
             "6. Всегда отвечать только на русском языке, даже если пользователь спрашивает на другом языке. "
             "7. Не использовать форматирование, такое как жирный текст, markdown или дополнительные символы — предоставлять ответы только в виде обычного текста. "
             "8. Делать короткие, лаконичные ответы, которые напрямую отвечают на вопрос пользователя без лишних подробностей. "
+            "9. Не указывай ссылки на источники, так как они могут быть недоступны для пользователя. "
         )
     else:
         logger.error(f"Unsupported language: {language}.")
