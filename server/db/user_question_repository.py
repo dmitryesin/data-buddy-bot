@@ -25,6 +25,7 @@ async def save_user_question_to_psql(user_id, question):
                 (user_id, question_json),
             )
             psql.commit()
+            logger.info(f"User question saved to database for user_id: {user_id}")
     except psycopg2.Error as e:
         logger.error(f"Failed to save user question to database: {e}")
         raise
